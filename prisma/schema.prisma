@@ -1,0 +1,37 @@
+// This is your Prisma schema file
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+  follows   UserCompanyFollow[]
+}
+
+model Company {
+  id        String   @id @default(uuid())
+  name      String
+  ticker    String?
+  createdAt DateTime @default(now())
+  followers UserCompanyFollow[]
+}
+
+model UserCompanyFollow {
+  id        String   @id @default(uuid())
+  userId    String
+  companyId String
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, companyId])
+}
